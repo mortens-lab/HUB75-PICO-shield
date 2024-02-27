@@ -1,0 +1,140 @@
+#import FreeMono9pt7b
+import time
+import board
+import displayio
+import rgbmatrix
+import terminalio
+import framebufferio
+
+#from adafruit_display_shapes.rect import Rect
+#from adafruit_display_shapes.polygon import Polygon
+from adafruit_bitmap_font import bitmap_font
+from adafruit_display_text.label import Label
+#from adafruit_matrixportal.network import Network
+#from adafruit_matrixportal.matrix import Matrix
+
+displayio.release_displays()
+
+matrix = rgbmatrix.RGBMatrix(
+    width=64, height=64, bit_depth=3,
+    rgb_pins=[board.GP0, board.GP1, board.GP2, board.GP3, board.GP4, board.GP5],
+    addr_pins=[board.GP6, board.GP7, board.GP8, board.GP9, board.GP10],
+    clock_pin=board.GP11, latch_pin=board.GP12, output_enable_pin=board.GP13,
+    doublebuffer=True)
+
+display = framebufferio.FramebufferDisplay(matrix, auto_refresh=True)
+# --- Content Setup ---
+#deco_font = bitmap_font.load_font("/BellotaText-Bold-21.bdf")
+
+0
+group = displayio.Group()
+# Create a color palette
+color = displayio.Palette(4)
+color[0] = 0x000000 # black
+color[1] = 0xFF0000 # red
+color[2] = 0x444444 # dim white
+color[3] = 0xDD8000 # gold
+
+# text positions
+line1 = Label(
+    terminalio.FONT,
+    color=0xff0000,
+    text="MORTEN")
+line1.x = 1
+line1.y = 8
+
+line2 = Label(
+    terminalio.FONT,
+    color=0xffffff,
+    scale=2,
+    text="458")
+line2.x = 1
+line2.y = 24
+
+line3= Label(
+    terminalio.FONT,
+    color=0xffffff,
+    text="madebymorten")
+line3.x = 1
+line3.y = 54
+
+# Put each line of text into a Group, then show that group.
+g = displayio.Group()
+g.append(line1)
+g.append(line2)
+g.append(line3)
+
+display.show(g)
+time.sleep(2.5)
+#display.fill(0)
+display.show(g)
+
+
+
+
+# Create a bitmap with two colors
+bitmap = displayio.Bitmap(display.width, display.height, 4)
+
+# Create a two color palette
+palette = displayio.Palette(4)
+palette[0] = 0x000000
+palette[1] = 0x202020
+palette[2] = 0x200000
+palette[3] = 0x402000
+
+
+# Create a TileGrid using the Bitmap and Palette
+tile_grid = displayio.TileGrid(bitmap, pixel_shader=palette)
+
+# Create a Group
+gg = displayio.Group()
+
+# Add the TileGrid to the Group
+gg.append(tile_grid)
+
+# Add the Group to the Display
+display.show(gg)
+
+def box(x1,y1,x2,y2,color): 
+    for x in range(x1, x2):
+        for y in range(y1, y2):
+            bitmap[x, y] = color
+
+
+# Draw a pixel
+bitmap[40, 50] = 1
+
+# Draw even more pixels
+box(19,3,45,4,2)
+box(15,4,49,5,2)
+box(13,5,51,6,2)
+box(12,6,52,7,2)
+box(11,7,53,11,2)
+box(10,11,54,26,2)
+box(11,26,53,30,2)
+box(12,30,52,31,2)
+box(13,31,51,32,2)
+box(15,32,49,33,2)
+box(19,33,45,34,2)
+
+box(27,12,29,25,1)
+box(29,13,31,24,1)
+box(31,14,33,23,1)
+box(33,15,35,22,1)
+box(35,16,37,21,1)
+bitmap[37,17] = 1
+bitmap[37,18] = 1
+bitmap[37,19] = 1
+bitmap[38,18] = 1
+
+#display.refresh(minimum_frames_per_second=50)
+
+display.refresh(target_frames_per_second=2, minimum_frames_per_second=2) 
+
+while True:
+    bitmap[41,51] = 0
+    time.sleep(1.0)
+    bitmap[41,51] = 1
+    time.sleep(1.0)    
+  
+    
